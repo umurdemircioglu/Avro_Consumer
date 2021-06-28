@@ -29,7 +29,7 @@ public class AvroProducer {
         Customer customer = Customer.newBuilder()
                 .setAge(24)
                 .setAutomatedEmail(false)
-                .setFirstName("Emre")
+                .setFirstName("CCC")
                 .setLastName("Tan")
                 .setHeight(150f)
                 .setWeight(90f)

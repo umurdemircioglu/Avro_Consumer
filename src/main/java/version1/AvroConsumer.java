@@ -16,12 +16,15 @@ public class AvroConsumer {
         this.myConfig = myConfig;
     }
 
-    public void start(String topic ) {
-
+    public KafkaConsumer<String, Customer> createConsumer(String topic){
         KafkaConsumer<String, Customer> kafkaConsumer = new KafkaConsumer<>(myConfig.properties);
         kafkaConsumer.subscribe(Collections.singleton(topic));
-        System.out.println("Waiting for data...");
+        return kafkaConsumer;
 
+    }
+
+    public void start(KafkaConsumer<String, Customer> kafkaConsumer) {
+        System.out.println("Waiting for data...");
         while(control){
             ConsumerRecords<String, Customer> records = kafkaConsumer.poll(1000);
             for (ConsumerRecord<String, Customer> record : records){
