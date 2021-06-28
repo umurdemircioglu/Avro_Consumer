@@ -12,7 +12,6 @@
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
         <avro.version>1.8.2</avro.version>
-        <kafka.version>0.11.0.1</kafka.version>
         <confluent.version>3.3.1</confluent.version>
     </properties>
 
@@ -21,6 +20,11 @@
         <repository>
             <id>confluent</id>
             <url>http://packages.confluent.io/maven/</url>
+        </repository>
+
+        <repository>
+            <id>cloudera</id>
+            <url>https://repository.cloudera.com/artifactory/cloudera-repos/</url>
         </repository>
     </repositories>
 
@@ -37,18 +41,16 @@
         <!--dependencies needed for the kafka part-->
         <!-- https://mvnrepository.com/artifact/org.apache.kafka/kafka-clients -->
         <dependency>
-            <groupId>org.apache.kafka</groupId>
-            <artifactId>kafka-clients</artifactId>
-            <version>${kafka.version}</version>
-        </dependency>
-
-
-        <dependency>
             <groupId>io.confluent</groupId>
             <artifactId>kafka-avro-serializer</artifactId>
             <version>${confluent.version}</version>
         </dependency>
 
+        <dependency>
+            <groupId>org.apache.kafka</groupId>
+            <artifactId>kafka-clients</artifactId>
+            <version>2.1.0-cdh6.2.0</version>
+        </dependency>
     </dependencies>
 
     <build>
