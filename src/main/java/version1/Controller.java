@@ -1,7 +1,7 @@
 package version1;
 
-import io.confluent.kafka.serializers.KafkaAvroDeserializer;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
+import org.apache.kafka.common.serialization.ByteArrayDeserializer;
 import org.apache.kafka.common.serialization.StringDeserializer;
 
 
@@ -24,19 +24,17 @@ public class Controller {
 
         String kafkaBootstrapServers  = "127.0.0.1:9092";
         String groupID = "customer-consumer-group-v1";
-        String autoCommit = "false";
+        String autoCommit = "true";
         String offsetReset = "latest";
         String keyDeserializer = StringDeserializer.class.getName();
-        String valueDeserializer = KafkaAvroDeserializer.class.getName();
-        String schemaConnect = "http://127.0.0.1:8081";
-        String avroReader = "true";
+        String valueDeserializer = ByteArrayDeserializer.class.getName();
         String topic = "customer-avro";
 
         AvroConsumerConfig myConfig = new AvroConsumerConfig();
         myConfig.connect(kafkaBootstrapServers,groupID);
-        myConfig.settings(autoCommit,offsetReset,keyDeserializer,valueDeserializer,schemaConnect,avroReader);
+        myConfig.settings(autoCommit,offsetReset,keyDeserializer,valueDeserializer);
         AvroConsumer consumer = new AvroConsumer(myConfig);
-        KafkaConsumer<String, Customer> kafkaConsumer = consumer.createConsumer(topic);
+        KafkaConsumer<String, byte[]> kafkaConsumer = consumer.createConsumer(topic);
         consumer.start(kafkaConsumer);
 
     }

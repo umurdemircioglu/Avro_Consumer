@@ -14,13 +14,11 @@ public class AvroConsumerConfig {
         properties.put("group.id", groupID);
 
     }
-    public void settings(String autoCommit, String offsetReset, String keyDeserializer, String valueDeserializer, String schemaConnect, String avroReader){
+    public void settings(String autoCommit, String offsetReset, String keyDeserializer, String valueDeserializer){
         properties.put("auto.commit.enable", autoCommit);
         properties.put("auto.offset.reset", offsetReset);
         properties.setProperty("key.deserializer", keyDeserializer);
         properties.setProperty("value.deserializer", valueDeserializer);
-        properties.setProperty("schema.registry.url", schemaConnect);
-        properties.setProperty("specific.avro.reader", avroReader);
     }
 
 }
