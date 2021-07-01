@@ -12,7 +12,9 @@ import org.apache.kafka.common.TopicPartition;
 
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Collections;
 
@@ -29,6 +31,9 @@ public class AvroConsumer {
     Schema avroSchema = new Schema.Parser().parse(schema);
 
 
+
+
+
     private boolean control = true;
     public AvroConsumerConfig myConfig;
 
@@ -43,11 +48,12 @@ public class AvroConsumer {
 
     }
 
-    public void start(KafkaConsumer<String, byte[]> kafkaConsumer) {
+    public void start(KafkaConsumer<String, byte[]> kafkaConsumer,Schema schema) {
         System.out.println("Waiting for data...");
         while (control) {
             ConsumerRecords<String, byte[]> records = kafkaConsumer.poll(1000);
             for (ConsumerRecord<String, byte[]> record : records) {
+                //avroSchema yerine parametre schema gelmeli.
                 GenericRecord genericRecord = byteArrayToData(avroSchema, record.value());
                 //String oldugu bilindigi icin daha abstract lazim.
                 String event = genericRecord.get("event").toString();
@@ -56,6 +62,17 @@ public class AvroConsumer {
             kafkaConsumer.commitSync();
         }
     }
+
+    public Schema createAvroSchema(String schemaPath){
+            Schema finalSchema;
+        try{
+            finalSchema = new Schema.Parser().parse(new File(schemaPath));
+            return finalSchema;
+        }catch (IOException e){
+            return null;
+        }
+        //final DataFileReader<GenericRecord> genericRecords = new DataFileReader<>(avroFile, genericDatumReader);
+     }
 
     private GenericRecord byteArrayToData(Schema schema, byte[] byteData) {
         GenericDatumReader<GenericRecord> reader = new GenericDatumReader<GenericRecord>(schema);
