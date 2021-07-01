@@ -30,7 +30,7 @@ public class Controller {
         String keyDeserializer = StringDeserializer.class.getName();
         String valueDeserializer = ByteArrayDeserializer.class.getName();
         String topic = "customer-avro";
-        String schemaPath = "/Users/umurdemircioglu/Desktop/Avro_Consumer/EventMessage.avsc";
+        String schemaPath = "/Users/umurdemircioglu/Desktop/Avro_Consumer/src/main/resources/avro/EventMessageFixed.avsc";
 
 
         AvroConsumerConfig myConfig = new AvroConsumerConfig();

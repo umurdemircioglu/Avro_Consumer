@@ -54,7 +54,8 @@ public class AvroConsumer {
             ConsumerRecords<String, byte[]> records = kafkaConsumer.poll(1000);
             for (ConsumerRecord<String, byte[]> record : records) {
                 //avroSchema yerine parametre schema gelmeli.
-                GenericRecord genericRecord = byteArrayToData(avroSchema, record.value());
+                //EVENTMESSSAGEFIXED.avsc null eklenemedi.
+                GenericRecord genericRecord = byteArrayToData(schema, record.value());
                 //String oldugu bilindigi icin daha abstract lazim.
                 String event = genericRecord.get("event").toString();
                 System.out.printf("value = %s \n ", event);
