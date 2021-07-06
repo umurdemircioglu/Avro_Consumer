@@ -83,6 +83,5 @@ public class AvroProducer {
         }catch (IOException e){
             return null;
         }
-        //final DataFileReader<GenericRecord> genericRecords = new DataFileReader<>(avroFile, genericDatumReader);
     }
 }

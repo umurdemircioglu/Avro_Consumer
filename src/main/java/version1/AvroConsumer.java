@@ -91,7 +91,4 @@ public class AvroConsumer {
             }
         }
     }
-    //public void <T> getValue(){
-
-    //}
 }
