@@ -9,11 +9,11 @@ public class AvroConsumerConfig {
         this.properties = new Properties();
     }
 
-    public void connect(String kafkaBootstrapServers, String groupID){
+    public void setConnectionParams(String kafkaBootstrapServers, String groupID){
         properties.setProperty("bootstrap.servers",kafkaBootstrapServers);
         properties.put("group.id", groupID);
-
     }
+
     public void settings(String autoCommit, String offsetReset, String keyDeserializer, String valueDeserializer){
         properties.put("auto.commit.enable", autoCommit);
         properties.put("auto.offset.reset", offsetReset);

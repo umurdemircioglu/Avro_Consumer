@@ -11,19 +11,17 @@ import org.apache.kafka.common.serialization.ByteArraySerializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.util.Properties;
 
 public class AvroProducer {
     public static void main(String[] args) {
         String topic = "customer-avro";
-        String schema = "{\"namespace\": \"com.mentor.message\",\n" +
-                "    \"type\": \"record\",\n" +
-                "    \"name\": \"EventMessage\",\n" +
-                "    \"fields\": [\n" +
-                "        {\"name\": \"event\", \"type\": \"string\"}\n" +
-                "    ]\n" +
-                "}";
+        String schemaPath = "/Users/umurdemircioglu/Desktop/Avro_Consumer/src/main/resources/EventMessage.avsc";
+
+
+        Schema schema = createAvroSchema(schemaPath);
 
         Properties properties = new Properties();
         // normal producer
@@ -38,10 +36,9 @@ public class AvroProducer {
 
         Producer<String, byte[]> producer = new KafkaProducer<String, byte[]>(properties);
 
-        Schema avroSchema = new Schema.Parser().parse(schema);
 
-        String eventName = "Umur";
-        GenericRecord record = new GenericData.Record(avroSchema);
+        String eventName = "argela";
+        GenericRecord record = new GenericData.Record(schema);
         record.put("event", eventName);
 
 
@@ -49,7 +46,7 @@ public class AvroProducer {
         byte[] last = null;
 
         // Read as GenericRecord
-        GenericDatumWriter<GenericRecord> writer = new GenericDatumWriter<GenericRecord>(avroSchema);
+        GenericDatumWriter<GenericRecord> writer = new GenericDatumWriter<GenericRecord>(schema);
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         Encoder enc = EncoderFactory.get().binaryEncoder(out, null);
         try {
@@ -76,5 +73,16 @@ public class AvroProducer {
 
 
 
+    }
+
+    public static Schema createAvroSchema(String schemaPath){
+        Schema finalSchema;
+        try{
+            finalSchema = new Schema.Parser().parse(new File(schemaPath));
+            return finalSchema;
+        }catch (IOException e){
+            return null;
+        }
+        //final DataFileReader<GenericRecord> genericRecords = new DataFileReader<>(avroFile, genericDatumReader);
     }
 }

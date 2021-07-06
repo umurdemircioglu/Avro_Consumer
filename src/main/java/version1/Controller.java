@@ -22,7 +22,7 @@ public class Controller {
         String hdfsOutputPath = null;
         int connectionCount = 5;
         */
-        // READ FROM A FILE
+        // read file
         String kafkaBootstrapServers  = "127.0.0.1:9092";
         String groupID = "customer-consumer-group-v1";
         String autoCommit = "true";
@@ -30,15 +30,15 @@ public class Controller {
         String keyDeserializer = StringDeserializer.class.getName();
         String valueDeserializer = ByteArrayDeserializer.class.getName();
         String topic = "customer-avro";
-        String schemaPath = "/Users/umurdemircioglu/Desktop/Avro_Consumer/src/main/resources/avro/EventMessageFixed.avsc";
+        String schemaPath = "/Users/umurdemircioglu/Desktop/Avro_Consumer/src/main/resources/EventMessage.avsc";
 
 
-        AvroConsumerConfig myConfig = new AvroConsumerConfig();
-        myConfig.connect(kafkaBootstrapServers,groupID);
-        myConfig.settings(autoCommit,offsetReset,keyDeserializer,valueDeserializer);
-        AvroConsumer consumer = new AvroConsumer(myConfig);
+        AvroConsumerConfig config = new AvroConsumerConfig();
+        config.setConnectionParams(kafkaBootstrapServers,groupID);
+        config.settings(autoCommit,offsetReset,keyDeserializer,valueDeserializer);
+        AvroConsumer consumer = new AvroConsumer(config);
         KafkaConsumer<String, byte[]> kafkaConsumer = consumer.createConsumer(topic);
-        Schema avroSchema = consumer.createAvroSchema(schemaPath);
+        Schema avroSchema = consumer.parseAvroSchema(schemaPath);
         consumer.start(kafkaConsumer,avroSchema);
 
     }

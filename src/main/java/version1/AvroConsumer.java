@@ -8,63 +8,62 @@ import org.apache.avro.io.DecoderFactory;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
-import org.apache.kafka.common.TopicPartition;
+
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.apache.log4j.PropertyConfigurator;
 
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Path;
-import java.util.Arrays;
 import java.util.Collections;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 
 public class AvroConsumer {
 
-    private String schema = "{\"namespace\": \"com.mentor.message\",\n" +
-            "    \"type\": \"record\",\n" +
-            "    \"name\": \"EventMessage\",\n" +
-            "    \"fields\": [\n" +
-            "        {\"name\": \"event\", \"type\": \"string\"}\n" +
-            "    ]\n" +
-            "}";
-    Schema avroSchema = new Schema.Parser().parse(schema);
+    private AtomicBoolean control;
+    public AvroConsumerConfig config;
+    static Logger logger = LogManager.getLogger(AvroConsumer.class);
 
 
 
-
-
-    private boolean control = true;
-    public AvroConsumerConfig myConfig;
-
-    public AvroConsumer(AvroConsumerConfig myConfig) {
-        this.myConfig = myConfig;
+    public AvroConsumer(AvroConsumerConfig config) {
+        this.config = config;
+        this.control = new AtomicBoolean(true);
+        PropertyConfigurator.configure("src/main/resources/log4j.properties");
     }
 
     public KafkaConsumer<String, byte[]> createConsumer(String topic) {
-        KafkaConsumer<String, byte[]> kafkaConsumer = new KafkaConsumer<>(myConfig.properties);
+        KafkaConsumer<String, byte[]> kafkaConsumer = new KafkaConsumer<>(config.properties);
         kafkaConsumer.subscribe(Collections.singleton(topic));
         return kafkaConsumer;
 
     }
 
     public void start(KafkaConsumer<String, byte[]> kafkaConsumer,Schema schema) {
-        System.out.println("Waiting for data...");
-        while (control) {
+        logger.info("Waiting for data...");
+        while (control.get()) {
             ConsumerRecords<String, byte[]> records = kafkaConsumer.poll(1000);
             for (ConsumerRecord<String, byte[]> record : records) {
-                //avroSchema yerine parametre schema gelmeli.
-                //EVENTMESSSAGEFIXED.avsc null eklenemedi.
                 GenericRecord genericRecord = byteArrayToData(schema, record.value());
-                //String oldugu bilindigi icin daha abstract lazim.
+                //+Abstract
                 String event = genericRecord.get("event").toString();
-                System.out.printf("value = %s \n ", event);
+                logger.info(event);
             }
             kafkaConsumer.commitSync();
+            if(control.get() == false){
+                break;
+            }
         }
     }
 
-    public Schema createAvroSchema(String schemaPath){
+    public void stop(){
+        this.control.set(false);
+    }
+
+    public Schema parseAvroSchema(String schemaPath){
             Schema finalSchema;
         try{
             finalSchema = new Schema.Parser().parse(new File(schemaPath));
@@ -72,15 +71,16 @@ public class AvroConsumer {
         }catch (IOException e){
             return null;
         }
-        //final DataFileReader<GenericRecord> genericRecords = new DataFileReader<>(avroFile, genericDatumReader);
      }
 
-    private GenericRecord byteArrayToData(Schema schema, byte[] byteData) {
+
+    public GenericRecord byteArrayToData(Schema schema, byte[] byteData) {
         GenericDatumReader<GenericRecord> reader = new GenericDatumReader<GenericRecord>(schema);
         ByteArrayInputStream byteArrayInputStream = null;
         try {
             byteArrayInputStream = new ByteArrayInputStream(byteData);
             Decoder decoder = DecoderFactory.get().binaryDecoder(byteArrayInputStream, null);
+
             return reader.read(null, decoder);
         } catch (IOException e) {
             return null;
@@ -91,4 +91,7 @@ public class AvroConsumer {
             }
         }
     }
+    //public void <T> getValue(){
+
+    //}
 }

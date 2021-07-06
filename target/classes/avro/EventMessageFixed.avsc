@@ -1,8 +1,0 @@
-{
-     "namespace": "com.mentor.message",
-     "type": "record",
-     "name": "EventMessage",
-     "fields": [
-       { "name": "event", "type": "string" }
-     ]
-}
